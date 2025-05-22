@@ -1,120 +1,165 @@
 <?php
 session_start();
-
-if (isset($_POST['logout'])) {
-    session_unset();
-    session_destroy();
-    header('Location: index.php');
-    exit;
-}
-
-
 require 'connection.php';
-require 'partials/header.php';
 $con = connection();
 
-if (empty($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
-$uid = $_SESSION['user_id'];
-$msg = '';
 
-if (isset($_POST['fullname']) && isset($_POST['email'])) {
-    $fullname = $_POST['fullname'];
-    $email    = $_POST['email'];
-    $password = $_POST['password'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
+    $id     = intval($_POST['user_id']);
 
-    
-    $sql = "UPDATE users SET FullName='$fullname', Email='$email'";
-    if (!empty($password)) {
-        $sql .= ", Password='$password'";
+    if ($action === 'update') {
+       
+        $username =  $_POST['username'];
+        $password = $_POST['password'];
+        $email    = $_POST['email'];
+        $fullname =  $_POST['fullname'];
+        $admin    = intval($_POST['admin']);
+
+        $sql = "
+          UPDATE `users` SET
+            `Username` = '$username',
+            `Password` = '$password',
+            `Email`    = '$email',
+            `FullName` = '$fullname',
+            `admin`    = $admin
+          WHERE `UserID` = $id
+        ";
+        
+        if (mysqli_query($con, $sql)) {
+        echo "<script>alert('User Has Been Updated successfully!');</script>";
+        } else {
+        $err = mysqli_error($con);
+        echo "<script>alert( Error: {$err}');</script>";
+        }
+    } elseif ($action === 'delete') {
+        if (mysqli_query($con, "DELETE FROM users WHERE UserID = $id")) {
+        echo "<script>alert('User Has Been Deleted successfully!');</script>";
+        } else {
+        $err = mysqli_error($con);
+        echo "<script>alert( Error: $err);</script>";
+        }
     }
-    $sql .= " WHERE UserID = $uid";
-
-    if (mysqli_query($con, $sql)) {
-        $msg = 'Profile updated successfully.';
-        $_SESSION['user'] = $fullname;
-    } else {
-        $msg = 'Error: ' . mysqli_error($con);
-    }
 }
 
-$res = mysqli_query($con,
-    "SELECT Username, Email, FullName, Date
-     FROM users
-     WHERE UserID = $uid
-     LIMIT 1"
-);
-$user = mysqli_fetch_assoc($res);
+
+$res   = mysqli_query($con, "
+  SELECT `UserID`, `Username`, `Password`, `Email`, `FullName`, `admin`, `Date`
+  FROM `users`");
+$users = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
 mysqli_close($con);
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Your Profile DimaBuy</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="stylesheet" href="layout/profile.css">
+  <title>Manage Users</title>
+  <link rel="stylesheet" href="layout/admin.css">
+  <style>
+   
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .items-table th,
+    .items-table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      vertical-align: middle;
+    }
+    .items-table input,
+    .items-table select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 4px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      height: 36px;
+    }
+    .items-table button {
+      padding: 6px 12px;
+      background: #2980b9;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      height: 36px;
+    }
+    .items-table button.delete {
+      background: #e74c3c;
+    }
+    .items-table button:hover {
+      opacity: 0.9;
+    }
+    
+    .main-content.users-page {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
+    }
+  </style>
 </head>
-<body>
-  <?php render_header('Search Results – DimaBuy');?>
+<body class="admin-page">
+  <div class="admin-container">
+    <?php include 'partials/sidebare.php'; ?>
 
-  <main class="content">
-    <h2>Your Profile</h2>
-    <?php if ($msg): ?>
-      <p class="success"><?= htmlspecialchars($msg) ?></p>
-    <?php endif; ?>
+    <main class="main-content users-page">
+      <h1><strong>Manage Users</strong></h1>
 
-    <form method="post" class="profile-form">
-      <label>
-        Username
-        <input type="text"
-               value="<?= htmlspecialchars($user['Username']) ?>"
-               disabled>
-      </label>
-
-      <label>
-        Full Name
-        <input type="text"
-               name="fullname"
-               value="<?= htmlspecialchars($user['FullName']) ?>"
-               >
-      </label>
-
-      <label>
-        Email
-        <input type="email"
-               name="email"
-               value="<?= htmlspecialchars($user['Email']) ?>"
-               >
-      </label>
-
-      <label>
-        New Password
-        <input type="password"
-               name="password"
-               placeholder="Leave blank to keep current">
-      </label>
-
-      <label>
-        Member Since
-        <input type="text"
-               value="<?= htmlspecialchars($user['Date']) ?>"
-               disabled>
-      </label>
-
-      <button type="submit" class="btn">Save Changes</button>
-      
-      <button type="submit" name="logout" value="1" style="margin-top: 10px; padding: 14px 0; background: #e53935; color: #fff;font-size: 1rem;font-weight: 600;border: none; border-radius: 8px; cursor: pointer; transition: background 0.3s ease, transform 0.2s ease;
-  ">LogOut</button>
-
-      
-    </form>
-  </main>
-
-  <?php render_footer();?>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>UserID</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Email</th>
+            <th>FullName</th>
+            <th>Admin</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($users as $u): ?>
+          <tr>
+            <form method="post" onsubmit="return <?= ($_POST['action'] ?? '')==='delete' ? "confirm('Really delete this user?')" : 'true' ?>">
+              <td>
+                <?= $u['UserID'] ?>
+                <input type="hidden" name="user_id" value="<?= $u['UserID'] ?>">
+              </td>
+              <td>
+                <input type="text" name="username" value="<?= htmlspecialchars($u['Username']) ?>">
+              </td>
+              <td>
+                <input type="text" name="password" value="<?= htmlspecialchars($u['Password']) ?>">
+              </td>
+              <td>
+                <input type="email" name="email" value="<?= htmlspecialchars($u['Email']) ?>">
+              </td>
+              <td>
+                <input type="text" name="fullname" value="<?= htmlspecialchars($u['FullName']) ?>">
+              </td>
+              <td>
+                <select name="admin">
+                  <option value="0" <?= $u['admin']==0?'selected':'' ?>>No</option>
+                  <option value="1" <?= $u['admin']==1?'selected':'' ?>>Yes</option>
+                </select>
+              </td>
+              <td>
+                <?= htmlspecialchars($u['Date']) ?>
+              </td>
+              <td style="display:flex; gap:4px;">
+                <button type="submit" name="action" value="update">Edit</button>
+                <button type="submit" name="action" value="delete" class="delete">Delete</button>
+              </td>
+            </form>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+    </main>
+  </div>
 </body>
 </html>
