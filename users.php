@@ -3,17 +3,17 @@ session_start();
 require 'connection.php';
 $con = connection();
 
-// 1) Handle POST actions
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     $id     = intval($_POST['user_id']);
 
     if ($action === 'update') {
-        // sanitize inputs
-        $username = mysqli_real_escape_string($con, $_POST['username']);
-        $password = mysqli_real_escape_string($con, $_POST['password']);
-        $email    = mysqli_real_escape_string($con, $_POST['email']);
-        $fullname = mysqli_real_escape_string($con, $_POST['fullname']);
+       
+        $username =  $_POST['username'];
+        $password = $_POST['password'];
+        $email    = $_POST['email'];
+        $fullname =  $_POST['fullname'];
         $admin    = intval($_POST['admin']);
 
         $sql = "
@@ -29,28 +29,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (mysqli_query($con, $sql)) {
         echo "<script>alert('User Has Been Updated successfully!');</script>";
         } else {
-        // grab the real MySQL error
-        $err = addslashes(mysqli_error($con));
+        $err = mysqli_error($con);
         echo "<script>alert( Error: {$err}');</script>";
         }
-
     } elseif ($action === 'delete') {
-        
-        if (mysqli_query($con, "DELETE FROM `users` WHERE `UserID` = $id")) {
+        if (mysqli_query($con, "DELETE FROM users WHERE UserID = $id")) {
         echo "<script>alert('User Has Been Deleted successfully!');</script>";
         } else {
-        // grab the real MySQL error
-        $err = addslashes(mysqli_error($con));
-        echo "<script>alert( Error: {$err}');</script>";
+        $err = mysqli_error($con);
+        echo "<script>alert( Error: $err);</script>";
         }
     }
 }
 
-// 2) Fetch all users
+
 $res   = mysqli_query($con, "
   SELECT `UserID`, `Username`, `Password`, `Email`, `FullName`, `admin`, `Date`
-  FROM `users`
-");
+  FROM `users`");
 $users = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
 mysqli_close($con);
@@ -62,7 +57,7 @@ mysqli_close($con);
   <title>Manage Users</title>
   <link rel="stylesheet" href="layout/admin.css">
   <style>
-    /* reuse the same table styles */
+   
     .items-table {
       width: 100%;
       border-collapse: collapse;
@@ -98,7 +93,7 @@ mysqli_close($con);
     .items-table button:hover {
       opacity: 0.9;
     }
-    /* stack title and table vertically */
+    
     .main-content.users-page {
       flex-direction: column;
       align-items: flex-start;
