@@ -3,7 +3,6 @@ session_start();
 require 'connection.php';
 $con = connection();
 
-// 1) Handle an update POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'update') {
     $id          = intval($_POST['item_id']);
     $name        = mysqli_real_escape_string($con, $_POST['name']);
@@ -30,18 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
     if (mysqli_query($con, $sql)) {
         echo "<script>alert('Item Has Been Edited successfully!');</script>";
     } else {
-        // grab the real MySQL error
         $err = addslashes(mysqli_error($con));
         echo "<script>alert( Error: {$err}');</script>";
     }
    
 }
 
-// 2) Fetch all items
 $res   = mysqli_query($con, "SELECT * FROM `items`");
 $items = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
-// 3) Fetch categories for the dropdown
 $catRes     = mysqli_query($con, "SELECT id, name FROM categories");
 $categories = mysqli_fetch_all($catRes, MYSQLI_ASSOC);
 
@@ -54,20 +50,19 @@ mysqli_close($con);
   <title>Manage Items</title>
   <link rel="stylesheet" href="layout/admin.css">
   <style>
-   /* Simple table styling */
 .items-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  table-layout: auto;        /* let columns size naturally */
+  table-layout: auto;       
 }
 
 .items-table th,
 .items-table td {
   border: 1px solid #ccc;
   padding: 8px;
-  height: 60px;              /* fixed row height */
-  vertical-align: middle;    /* center content vertically */
+  height: 60px;             
+  vertical-align: middle;    
 }
 
 .items-table input,
@@ -75,7 +70,7 @@ mysqli_close($con);
   width: 100%;
   box-sizing: border-box;
   padding: 4px;
-  height: 36px;              /* make inputs taller */
+  height: 36px;              
   line-height: 1.2;
   border: 1px solid #bbb;
   border-radius: 4px;
@@ -83,7 +78,7 @@ mysqli_close($con);
 
 .items-table button {
   padding: 6px 12px;
-  height: 36px;              /* match input height */
+  height: 36px;              
   line-height: 1.2;
   background: #2980b9;
   color: #fff;
@@ -96,12 +91,12 @@ mysqli_close($con);
   background: #3498db;
 }
 .main-content.edit-page {
-  flex-direction: column;      /* stack children top to bottom */
-  align-items: flex-start;     /* keep them left-aligned */
-  gap: 1.5rem;                 /* space between h1 and table */
+  flex-direction: column;      
+  align-items: flex-start;     
+  gap: 1.5rem;                 
 }
 
-/* Make sure the table fills the width */
+
 .main-content.edit-page .items-table {
   width: 100%;
 }
