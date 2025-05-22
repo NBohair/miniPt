@@ -4,14 +4,12 @@ require 'connection.php';
 require 'partials/header.php';
 $con = connection();
 
-// 1) Ensure logged in
 if (empty($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 $uid = intval($_SESSION['user_id']);
 
-// 2) Fetch cart items with JOIN to pull item details
 $sql = "SELECT 
           c.Quantity,
           i.Item_ID,
@@ -27,14 +25,12 @@ $cartItems = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_sale'])) {
-    // 1) Fetch everything in the cart
     $res = mysqli_query($con,
       "SELECT c.Item_ID, c.Quantity, i.Price
          FROM cart AS c
          JOIN items AS i ON c.Item_ID = i.Item_ID
         WHERE c.UserID = $uid"
     );
-    // 2) Insert each into sold_items
     while ($row = mysqli_fetch_assoc($res)) {
         $item   = intval($row['Item_ID']);
         $qty    = intval($row['Quantity']);
@@ -44,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_sale'])) {
            VALUES ($uid, $item, $qty, $price)"
         );
     }
-    // 3) Clear the cart
     mysqli_query($con,
       "DELETE FROM cart WHERE UserID = $uid"
     );
@@ -138,7 +133,6 @@ mysqli_close($con);
     </form>
   </td>
 
-  <!-- Delete link -->
   <td>
     <form method="post">
       <input type="hidden" name="item_id" value="<?= $row['Item_ID'] ?>">
