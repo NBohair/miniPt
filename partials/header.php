@@ -1,7 +1,5 @@
 <?php
-// layout.php
 
-// 1) Shared startup: session + DB
 require_once _DIR_ . '/../connection.php';
 $con = connection();
 
