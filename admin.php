@@ -12,22 +12,6 @@ if (empty($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
   <title>Admin Control Station</title>
   <link rel="stylesheet" href="layout/admin.css">
 </head>
-    <style>
-        .btn-submit {
-    padding: 10px 20px;
-    background-color: #e53935; 
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn-submit:hover {
-    background-color: #c62828; 
-}
-
-    </style>
 <body class="admin-page">
   <div class="admin-container">
 
