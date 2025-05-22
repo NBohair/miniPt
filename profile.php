@@ -4,7 +4,7 @@ require 'connection.php';
 require 'partials/header.php';
 $con = connection();
 
-// 1) Redirect if not logged in
+
 if (empty($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -12,17 +12,17 @@ if (empty($_SESSION['user_id'])) {
 $uid = intval($_SESSION['user_id']);
 $msg = '';
 
-// 2) Handle form submission
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullname = trim($_POST['fullname']);
     $email    = trim($_POST['email']);
-    // Build an optional password fragment if they set one
+    
     $passFragment = '';
     if (!empty($_POST['password'])) {
         $hash = $_POST['password'];
         $passFragment = ", Password='$hash'";
     }
-    // Escape inputs
+    
     $fn = mysqli_real_escape_string($con, $fullname);
     $em = mysqli_real_escape_string($con, $email);
 
@@ -33,13 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              WHERE UserID = $uid";
     if (mysqli_query($con, $sql)) {
         $msg = 'Profile updated successfully.';
-        $_SESSION['user'] = $fullname;  // update display name in session
+        $_SESSION['user'] = $fullname;  
     } else {
         $msg = 'Error: ' . mysqli_error($con);
     }
 }
 
-// 3) Fetch current user info
+
 $res = mysqli_query($con,
     "SELECT Username, Email, FullName, Date
        FROM users
