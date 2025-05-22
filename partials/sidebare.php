@@ -10,7 +10,7 @@
     <a href="edit_item.php"   class="nav-btn">Edit Existing Item</a>
     <a href="delete_item.php" class="nav-btn">Delete Item</a>
     <a href="users.php"       class="nav-btn">Users</a>
-    <a href="orders.php"      class="nav-btn">View All Orders</a> <!-- hna orders d li commanda -->
+    <a href="orders.php"      class="nav-btn">View All Orders</a> 
 </nav>
 
   </nav>
