@@ -3,7 +3,6 @@ session_start();
 require 'connection.php';
 $con = connection();
 
-// 1) Ensure the user is logged in
 if (empty($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -17,7 +16,6 @@ if (!$itemId) {
     exit;
 }
 
-// 2) Check if there’s already a cart row for this user & item
 $sql = "SELECT Quantity
         FROM cart
         WHERE UserID = $uid
@@ -26,14 +24,12 @@ $sql = "SELECT Quantity
 $res = mysqli_query($con, $sql);
 
 if ($res && mysqli_num_rows($res) === 1) {
-    // 3a) Update existing
     mysqli_query($con,
       "UPDATE cart
          SET Quantity = Quantity + $qty
        WHERE UserID = $uid AND Item_ID = $itemId"
     );
 } else {
-    // 3b) Insert new
     mysqli_query($con,
       "INSERT INTO cart (UserID, Item_ID, Quantity)
        VALUES ($uid, $itemId, $qty)"
@@ -42,6 +38,5 @@ if ($res && mysqli_num_rows($res) === 1) {
 
 mysqli_close($con);
 
-// 4) Redirect to the cart page
 header('Location: cartuser.php');
 exit;
