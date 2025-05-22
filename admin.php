@@ -1,6 +1,5 @@
 <?php
 session_start();
-// only allow admins
 if (empty($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
     header('Location: homepage.php');
     exit;
@@ -16,14 +15,14 @@ if (empty($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
 <body class="admin-page">
   <div class="admin-container">
 
-    <!-- LEFT SIDEBAR -->
+   
     <?php include 'partials/sidebare.php'; ?>
 
-    <!-- RIGHT MAIN CONTENT -->
+    
     <main class="main-content">
       <h1>Welcome to Admin Control Station</h1>
       
-      <!-- Bouton de déconnexion -->
+     
       <form method="post" action="logout.php" style="margin-top: 20px;">
         <button type="submit" class="btn-submit">Log Out</button>
       </form>
