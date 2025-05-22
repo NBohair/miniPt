@@ -1,39 +1,40 @@
 <?php
 session_start();
+
+if (isset($_POST['logout'])) {
+    session_unset();
+    session_destroy();
+    header('Location: index.php');
+    exit;
+}
+
+
 require 'connection.php';
 require 'partials/header.php';
 $con = connection();
-
 
 if (empty($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
-$uid = intval($_SESSION['user_id']);
+$uid = $_SESSION['user_id'];
 $msg = '';
 
+if (isset($_POST['fullname']) && isset($_POST['email'])) {
+    $fullname = $_POST['fullname'];
+    $email    = $_POST['email'];
+    $password = $_POST['password'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $fullname = trim($_POST['fullname']);
-    $email    = trim($_POST['email']);
     
-    $passFragment = '';
-    if (!empty($_POST['password'])) {
-        $hash = $_POST['password'];
-        $passFragment = ", Password='$hash'";
+    $sql = "UPDATE users SET FullName='$fullname', Email='$email'";
+    if (!empty($password)) {
+        $sql .= ", Password='$password'";
     }
-    
-    $fn = mysqli_real_escape_string($con, $fullname);
-    $em = mysqli_real_escape_string($con, $email);
+    $sql .= " WHERE UserID = $uid";
 
-    $sql = "UPDATE users
-               SET FullName='$fn',
-                   Email='$em'
-                   $passFragment
-             WHERE UserID = $uid";
     if (mysqli_query($con, $sql)) {
         $msg = 'Profile updated successfully.';
-        $_SESSION['user'] = $fullname;  
+        $_SESSION['user'] = $fullname;
     } else {
         $msg = 'Error: ' . mysqli_error($con);
     }
@@ -42,18 +43,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $res = mysqli_query($con,
     "SELECT Username, Email, FullName, Date
-       FROM users
-      WHERE UserID = $uid
-      LIMIT 1"
+     FROM users
+     WHERE UserID = $uid
+     LIMIT 1"
 );
 $user = mysqli_fetch_assoc($res);
 mysqli_close($con);
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Your Profile – DimaBuy</title>
+  <title>Your Profile DimaBuy</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="layout/profile.css">
 </head>
@@ -79,7 +82,7 @@ mysqli_close($con);
         <input type="text"
                name="fullname"
                value="<?= htmlspecialchars($user['FullName']) ?>"
-               required>
+               >
       </label>
 
       <label>
@@ -87,7 +90,7 @@ mysqli_close($con);
         <input type="email"
                name="email"
                value="<?= htmlspecialchars($user['Email']) ?>"
-               required>
+               >
       </label>
 
       <label>
@@ -105,6 +108,11 @@ mysqli_close($con);
       </label>
 
       <button type="submit" class="btn">Save Changes</button>
+      
+      <button type="submit" name="logout" value="1" style="margin-top: 10px; padding: 14px 0; background: #e53935; color: #fff;font-size: 1rem;font-weight: 600;border: none; border-radius: 8px; cursor: pointer; transition: background 0.3s ease, transform 0.2s ease;
+  ">LogOut</button>
+
+      
     </form>
   </main>
 
