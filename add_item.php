@@ -6,9 +6,7 @@ $con = connection();
 $catRes = mysqli_query($con, "SELECT id, name FROM categories");
 $categories = mysqli_fetch_all($catRes, MYSQLI_ASSOC);
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // grab & sanitize form inputs
     $name        = mysqli_real_escape_string($con, $_POST['name']);
     $description = mysqli_real_escape_string($con, $_POST['description']);
     $price       = floatval($_POST['price']);
@@ -17,9 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $added_on    = mysqli_real_escape_string($con, $_POST['added_on']);
     $tags        = mysqli_real_escape_string($con, $_POST['tags']);
     $image       = mysqli_real_escape_string($con, $_POST['image']);
-    $member_id   = intval($_SESSION['user_id']);  // pull logged-in user
+    $member_id   = intval($_SESSION['user_id']);  
 
-    // Build SQL with Member_ID
     $sql = "
       INSERT INTO `items`
         (`Name`,`Description`,`Price`,`Cat_ID`,
@@ -41,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (mysqli_query($con, $sql)) {
         echo "<script>alert('Item added successfully!');</script>";
     } else {
-        // grab the real MySQL error
         $err = addslashes(mysqli_error($con));
         echo "<script>alert( Error: {$err}');</script>";
     }
@@ -61,10 +57,8 @@ mysqli_close($con);
 
   <div class="admin-container">
 
-    <!-- LEFT SIDEBAR -->
     <?php include 'partials/sidebare.php'; ?>
 
-    <!-- RIGHT MAIN CONTENT -->
     <main class="main-content">
       <h1><strong> New Product</strong></h1>
 
