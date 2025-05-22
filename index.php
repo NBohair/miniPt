@@ -8,7 +8,6 @@
 </head>
 <body>
 
-  <!-- Header / Logo -->
   <header>
   <div class="container header">
     <img src="images/logo.png" alt="MyShop Logo" class="logo-img">
@@ -16,7 +15,6 @@
   </div>
 </header>
 
-  <!-- Hero Section -->
   <section class="hero">
     <div class="hero-text">
       <h1>Welcome to DimaBuy Website</h1>
