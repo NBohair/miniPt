@@ -3,20 +3,17 @@ session_start();
 require 'connection.php';
 $con = connection();
 
-// 1) Handle delete action
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete') {
     $id = intval($_POST['item_id']);
     
      if (mysqli_query($con, "DELETE FROM `items` WHERE `Item_ID` = $id")) {
         echo "<script>alert('Item Has Been Deleted successfully!');</script>";
     } else {
-        // grab the real MySQL error
         $err = addslashes(mysqli_error($con));
         echo "<script>alert( Error: {$err}');</script>";
     }
 }
 
-// 2) Fetch only the three columns we need
 $res   = mysqli_query($con, "SELECT `Item_ID`, `Name`, `Description` FROM `items`");
 $items = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
@@ -29,7 +26,6 @@ mysqli_close($con);
   <title>Delete Items</title>
   <link rel="stylesheet" href="layout/admin.css">
   <style>
-    /* you can omit this if items-table is already styled in admin.css */
     .items-table {
       width: 100%;
       border-collapse: collapse;
@@ -53,12 +49,11 @@ mysqli_close($con);
       background: #c0392b;
     }
     .main-content.delete-page {
-  flex-direction: column;      /* stack children top to bottom */
-  align-items: flex-start;     /* keep them left-aligned */
-  gap: 1.5rem;                 /* space between h1 and table */
+  flex-direction: column;     
+  align-items: flex-start;    
+  gap: 1.5rem;                 
 }
 
-/* Make sure the table fills the width */
 .main-content.delete-page .items-table {
   width: 100%;
 }
