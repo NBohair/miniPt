@@ -3,13 +3,11 @@ session_start();
 require 'connection.php';
 $con = connection();
 
-// Vérifier si l'utilisateur est un administrateur
 if (empty($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
     header('Location: homepage.php');
     exit;
 }
 
-// Récupérer toutes les commandes
 $sql = "SELECT * FROM sold_items";
 $res = mysqli_query($con, $sql);
 $orders = mysqli_fetch_all($res, MYSQLI_ASSOC);
