@@ -59,7 +59,7 @@ if ($q === '' && $filter === 0) {
     }
 
     
-    // Run the query
+ 
     $res = mysqli_query($con, $sql);
     if (!$res) {
         $error = 'Database error: ' . mysqli_error($con);
