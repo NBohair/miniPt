@@ -125,11 +125,13 @@ function render_header($title = 'DimaBuy') {
             <img src="images/search-icon.png" alt="Search" class="search-icon">
           </div>
         </div>
-        <select name="price_sort" class="sort-dropdown">
-          <option value="0">Sort by price</option>
-          <option value="asc" <?= (($_GET['price_sort'] ?? '')==='asc')?'selected':'' ?>>Low → High</option>
-          <option value="desc" <?= (($_GET['price_sort'] ?? '')==='desc')?'selected':'' ?>>High → Low</option>
-        </select>
+        <?php if (basename($_SERVER['PHP_SELF']) === 'search.php'): ?>
+            <select name="price_sort">
+              <option value="0">Sort by price</option>
+              <option value="asc" <?= (($_GET['price_sort'] ?? '')==='asc')?'selected':'' ?>>Low → High</option>
+              <option value="desc" <?= (($_GET['price_sort'] ?? '')==='desc')?'selected':'' ?>>High → Low</option>
+            </select>
+        <?php endif; ?>
       </form>
     </div>
     <div class="header-right">
